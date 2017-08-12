@@ -1,0 +1,201 @@
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.UserDao">
+	<resultMap type="zn.entity.User" id="User">
+		<result property="userId" column="userId"/>
+		<result property="userName" column="userName"/>
+		<result property="telephone" column="telephone"/>
+		<result property="password" column="password"/>
+		<result property="information" column="information"/>
+		<result property="loadState" column="loadState"/>
+		<result property="lastLoadTime" column="lastLoadTime"/>
+		<result property="orgId" column="orgId"/>
+		<result property="orgName" column="orgName"/>
+		<result property="limitsId" column="limitsIde"/>
+		<result property="limitsName" column="limitsName"/>
+		<result property="userPicUrl" column="userPicUrl" />
+		<result property="deviceToken" column="deviceToken" />
+	</resultMap> 
+
+	
+ <!-- 检查账号是否存在 -->
+ 	<select id="checkTel" parameterType="String" resultType="int">
+ select count(userId) from userxml where telephone=#{telephone}
+ 	</select>
+ 
+ <!-- 检查账号，密码是否正确	 -->
+ 	<select id="checkLogin"    resultType="int">
+ 	 select count(userId) from userxml where telephone=#{telephone} and password=#{password}
+ 	</select>	
+ 	
+ 	
+ <!-- 通过用户账号查询用户id	 -->
+ 	<select id="selectIdByTel" parameterType="String" resultType="Integer">	
+ 	select userId from userxml where telephone=#{telephone}
+ 	</select>
+ 	
+ <!-- 更改用户登陆状态	 -->
+ 	<update id="changeUserState">
+ 	update userxml set loadState=1,lastLoadTime=#{lastLoadTime}  where userId=#{userId}
+ 	</update>
+ 	
+	<!-- 添加用户得到主键 -->
+ 	<insert id="addUserAndGetId" parameterType="zn.entity.User" useGeneratedKeys="true" keyProperty="userId">	
+	insert  into [user](userName,telephone,password,information) values(#{userName},#{telephone},#{password},#{information}) 	
+ 	</insert>
+	
+	<!-- 添加用户的组织 -->
+	<insert id="addUserAndOrg" parameterType="zn.entity.User">
+	insert into user_org(userId,orgId) values(#{userId},#{orgId}) 
+	</insert>
+	
+	<delete id="deleteUserAndOrg" parameterType="int">
+	delete from user_org where userId=#{userId}
+	</delete>
+	
+	<!-- 给用户添加权限 -->
+	<insert id="userAddLimits">
+	insert into user_limits(limitsId,userId) values (#{limitsId},#{userId}); 
+	</insert>
+ 	
+ 	<!-- 删除用户权限 -->
+ 	<delete id="userDeleteLimits" parameterType="int">
+ 	delete from user_limits where userId=#{userId}
+ 	</delete>
+	
+	
+	<!-- 根据id查询用户信息 -->
+	<select id="selectUserById" parameterType="int" resultType="zn.entity.XUser">
+	select * from userxml where userId=#{userId};
+	</select>
+	
+	<!-- 根据所有查询用户信息 -->
+	<select id="selectAllUser"  resultType="zn.entity.XUser">
+	select * from userxml ;
+	</select>
+	
+	<!-- 根据id删除用户信息 -->
+	<delete id="deleteUser"  parameterType="int">
+    delete from [user] where userId=#{userId};
+	</delete>
+	
+	<!-- 更改用户信息 -->
+	<update id="changeUserInfo">
+	update userxml <set>
+	<if test="information!=null">information=#{information},</if>
+	<if test="userName!=null">userName=#{userName}</if>
+	</set>   where userId=#{userId};
+	</update>
+	
+	<!-- 根据组织查询用户 -->
+	<select id="selectUserByOrg" parameterType="int" resultType="zn.entity.XUser">
+	  select * from userxml where orgId=#{orgId}  
+	</select>	
+	<!-- 更改用户密码 -->
+	<update id="changePassword">
+	update userxml set password=#{password} where userId=#{userId}	
+	</update>
+	
+	<!-- 用户选择设备 -->
+	<insert id="userAddMon"   >
+	insert    into  user_monitor(userId,monId) values
+	<foreach collection="monList" separator="," index="index" item="monId">
+		(#{userId},#{monId})	
+	</foreach>                             
+	</insert>
+	
+	<!-- 删除用户的关联设备 -->
+	<delete id="userDelteMon" parameterType="int">
+	delete from user_monitor where userId=#{userId};
+	</delete>
+	
+	<!-- 查询指定设备下的用户信息 -->
+	<select id="seleteUserByMonId" parameterType="int" resultMap="User">
+    select a.* from userview a,monitor b,user_monitor c where a.userId=c.userId 
+    and b.monId=c.monId and c.monId=#{monId}
+	
+	</select>
+	
+	<!-- 查询指定用户的权限 -->
+	<select id="seleteUserLimitsById" parameterType="int" resultType="String">
+	select userNumber from userxml where userId=#{userId}
+	</select>
+	
+	<!-- 用户添加头像路径 -->
+	<update id="changePicUrl" >
+	update userxml set userPicUrl=#{userPicUrl}  where userId=#{userId}
+	</update>
+	
+	<!-- 查询用户头像路径 -->
+	<select id="selectUserPic" parameterType="int" resultType="String">
+	select userPicUrl from userxml where userId=#{userId}
+	</select>
+	
+	<select id="selectUserIdList"  parameterType="int" resultType="Integer">
+	select userId  from user_monitor  where monId=#{monId}  union   select userId from userxml where userNumber='e142fa89-4a1f-48a6-9735-a065fee512dc'
+	</select>
+	
+	
+	<select id="selectDeviceTokenListByMonId"  parameterType="int" resultType="java.util.Map">
+	   select u.deviceToken, u.phoneType from [user] u join user_monitor um on u.userId=um.userId and um.monId=#{monId}
+	</select>
+	
+	<!-- 查询指定设备下的用户关联列表 -->
+	<select id="seleteUserListByMonId" parameterType="int" resultType="java.util.Map">
+	 select a.userId,a.userName,count(b.id) as relation from [user] a left join (select * from user_monitor where monId=#{monId}) b on a.userId=b.userId group by a.userId,a.userName
+	</select>
+	
+	
+	
+	
+    <select id="seleteAllUserNumber" resultType="String">
+    select userNumber from userxml ;
+    </select>
+	
+	
+	
+		<!-- 添加多个人员 -->
+ 	<insert id="addMoreUser"  >
+ 		insert    into userxml(userName,telephone,password,userNumber,limitsId,limitsName,orgId,orgName) values
+	<foreach collection="list" separator="," index="index" item="item" >
+		(#{item.userName},#{item.telephone},#{item.password},#{item.userNumber},#{item.limitsId},#{item.limitsName},#{item.orgId},#{item.orgName})	
+	</foreach>  
+ 	</insert>
+ 	
+ 	<!-- 删除多个人员 -->
+ 	<delete id="deleteMoreUser">
+ 	<![CDATA[ 
+ 	delete from userxml where userNumber in
+ 	 ]]>
+ 	<foreach collection="list" open="(" separator="," close=")"  item="model">
+		#{model}	
+	</foreach>
+ 	</delete>
+ 	
+ 		<!-- 更改人员信息 -->
+	<update id="changeUser">
+	update userxml <set>
+	<if test="telephone!=null">telephone=#{telephone},</if>
+	<if test="userName!=null">userName=#{userName},</if>
+	<if test="password!=null">password=#{password},</if>
+	<if test="limitsId!=null">limitsId=#{limitsId},</if>
+	<if test="limitsName!=null">limitsName=#{limitsName},</if>
+	<if test="orgId!=null">orgId=#{orgId},</if>
+	<if test="orgName!=null">orgName=#{orgName}</if>
+	</set>   where userNumber=#{userNumber};
+	</update>
+	
+	<select id="selectXUserById" parameterType="int" resultType="zn.entity.XUser">
+		select * from userxml where userId=#{userId};
+	</select>
+
+	<delete id="deleteUserMonitor">
+	delete user_monitor
+	</delete>
+	
+	<update id="setUserDeviceToken">
+	   update [user] set deviceToken=#{deviceToken},phoneType=#{phoneType} where userId=#{userId}
+	</update>
+	
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.LimitsDao">
+	
+	<!-- 给用户添加权限 -->
+	<insert id="userAddLimits">
+	insert into user_limits(limitsId,userId) values (#{limitsId},#{userId}); 
+	</insert>
+ 	
+ 	<!-- 删除用户权限 -->
+ 	<delete id="userDeleteLimits" parameterType="int">
+ 	delete from user_limits where userId=#{userId}
+ 	</delete>
+ 	
+ 	<!-- 查询指定权限下的所有用户 -->
+ 	<select id="selectUserByLimitsId" parameterType="int" resultType="zn.entity.User">
+ 	select * from userview where limitsId=#{limitsId};
+ 	
+ 	</select>
+ 	
+ 	<!-- 获取权限列表 -->
+ 	<select id="selectLimitsList" resultType="zn.entity.Limits">
+ 	select  limitsId,limitsName  from limits;		
+ 	</select>
+ 	
+ 	
+ </mapper>

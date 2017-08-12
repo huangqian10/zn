@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.MonThirdListDao">
+
+<resultMap type="zn.entity.MonThirdList" id="MonThirdList">
+		<result property="thirdListId" column="thirdListId"/>
+		<result property="thirdListName" column="thirdListName"/>
+		<result property="secondListId" column="secondListId"/>	
+
+	</resultMap> 
+ 	
+ 	
+
+ 	<select id="selectIsExistById" parameterType="int" resultType="int">
+ 	select count(thirdListId) from monthirdlist where thirdListId=#{thirdListId};
+ 	</select>
+ 
+	<select id="selectIsExist" parameterType="String" resultType="int">
+	select count(thirdListId) from monthirdlist where thirdListName=#{thirdListName};
+	</select>
+	
+	<insert id="addThirdList">
+	insert  into  monthirdlist(thirdListName,secondListId)  values (#{thirdListName},#{secondListId});
+	 </insert>
+	 
+	 <delete id="deleteThirdList" parameterType="int">
+	 delete from monthirdlist where thirdListId=#{thirdListId}
+	 </delete>
+	
+	<update id="changeThirdList">
+	update monthirdlist set thirdListName=#{thirdListName},secondListId=#{secondListId} where thirdListId=#{thirdListId}
+	</update>
+	
+	<select id="findAllThirdlist"  resultMap="MonThirdList">
+	select * from monthirdlist
+	</select>
+	
+		<select id="selectListById" parameterType="int" resultMap="MonThirdList">
+		select * from monthirdlist where thirdListId=#{thirdListId}
+	</select>
+ 	
+ 		<select id="findThirdlistBySecondId" parameterType="int" resultMap="MonThirdList">
+	select * from monthirdlist where secondListId=#{secondListId}
+	</select>
+ 	
+ </mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.MonFirstListDao">
+ 	<resultMap type="zn.entity.MonFirstList" id="MonFirstList">
+		<result property="firstListId" column="firstListId"/>
+		<result property="firstListName" column="firstListName"/>
+
+	</resultMap> 
+ 
+ 
+	<select id="selectIsExist" parameterType="String" resultType="int">
+	select count(firstListId) from monfirstlist where firstListName=#{firstListName};
+	</select>
+	
+	
+	<select id="selectIsExistById" parameterType="int" resultType="int">
+		select count(firstListId) from monfirstlist where firstListId=#{firstListId};
+	</select>
+	
+	<insert id="addFirstList" parameterType="String">
+	insert  into  monfirstlist(firstListName)  values (#{firstListName});
+	 </insert>
+	 
+	 <delete id="deleteFirstList" parameterType="int">
+	 delete from monfirstlist where firstListId=#{firstListId}
+	 </delete>
+	
+	<update id="changeFirstList">
+	update monfirstlist set firstListName=#{firstListName} where firstListId=#{firstListId};
+	</update>
+	
+	<select id="findAllFirstlist"  resultMap="MonFirstList">
+	select * from monfirstlist
+	</select>
+	
+	<select id="selectListById" parameterType="int" resultMap="MonFirstList">
+		select * from monfirstlist where firstListId=#{firstListId};
+	</select>
+ 	
+ </mapper>

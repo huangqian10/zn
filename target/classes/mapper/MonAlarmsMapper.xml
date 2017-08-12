@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.MonAlarmsDao">
+	<select id="selectAllMonAlarms" parameterType="int" resultType="zn.entity.Alarms">
+	select * from alarms where userId=#{userId}
+	</select> 
+	
+	
+	<select id="selectUserAllMonAlarms" parameterType="int" resultType="zn.entity.Alarms">
+	select a.* from alarms a join  user_monitor b on a.monId=b.monId  and a.userId=b.userId where a.userId=#{userId}
+	</select>
+	
+
+	
+ 
+ 	<select id="selectAlarmsDateIsExist" parameterType="int" resultType="int">
+ 	select count(monId) from monalarms where   monId=#{monId}    
+ 	</select>
+ 	
+ 	<select id="selectMonAlarmsById"  parameterType="int"   resultType="zn.entity.Alarms">
+ 	select * from alarms where monId=#{monId}    
+ 	</select>
+ 	
+ 	<insert id="addMonAlarms" parameterType="zn.entity.MonAlarms" useGeneratedKeys="true" keyProperty="alarmsId">
+ 	
+ 	insert into monalarms(monId,monAlarmsType,monAlarmsTM,monAlarmsInfo) values
+ 	(#{monId},#{monAlarmsType},#{monAlarmsTM},#{monAlarmsInfo});
+ 	</insert>
+	
+	
+	<update id="changeMonAlarms" parameterType="zn.entity.MonAlarms">
+	update monalarms<set>
+	
+	<if test="monAlarmsType!=null">monAlarmsType=#{monAlarmsType},</if>
+	<if test="monAlarmsTM!=null">monAlarmsTM=#{monAlarmsTM},</if>
+	<if test="monAlarmsInfo!=null">monAlarmsInfo=#{monAlarmsInfo}</if>
+	</set>
+	 where  monId=#{monId}
+	</update>
+	
+	
+	<update id="changeMonAlarmsStatus" >
+	update user_monalarms set monAlarmsStatus=1  where alarmsId=#{alarmsId} and userId=#{userId}
+	</update>
+	
+	
+	<delete id="deleteMonAlarmsByMonId" parameterType="int">
+	delete from monalarms where monId=#{monId}
+	</delete>
+	
+	<delete id="deleteMonAlarmsById" parameterType="int">
+	delete from monalarms where alarmsId=#{alarmsId}
+	</delete>
+	
+	<delete id="deleteAlarmsById" parameterType="int">
+	delete from alarms where alarmsId=#{alarmsId};
+	</delete>
+	
+	<delete id="deleteAlarmsByMonId" parameterType="int">
+	delete from alarms where monId=#{monId}
+	</delete>
+	
+		<insert id="userAddAlarm"   >
+	insert    into  user_monalarms(userId,alarmsId) values
+	<foreach collection="list" separator="," index="index" item="item">
+		(#{item.userId},#{item.alarmsId})	
+	</foreach>                             
+	</insert>
+
+ 	
+ </mapper>

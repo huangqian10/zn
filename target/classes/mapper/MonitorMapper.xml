@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.MonitorDao">
+ 	
+ 	
+ 	<resultMap type="zn.entity.Monitor" id="Monitor">
+ 		<result property="monAlias" column="monAlias"/>		
+		<result property="monInstall" column="monInstall"/>
+		<result property="monId"  column="monId"/>
+		<result property="monIP" column="monIP"/>
+		<result property="monModel" column="monModel"/>
+		<result property="monName" column="monName"/>
+		<result property="monNumber" column="monNumber"/>
+		<result property="monPlace" column="monPlace"/>
+		<result property="monType" column="monType"/>
+		<result property="monRoute" column="monRoute" />
+		<result property="monPlaceName" column="monPlaceName"/>
+		<result property="monState" column="monState"/>
+		<result property="allAV" column="allAV"/>
+		<result property="allBV" column="allBV"/>
+		<result property="allCV" column="allCV"/>
+		<result property="monInT" column="monInT"/>
+ 	</resultMap>
+ 	
+ 	<!-- 查询所有设备信息 -->
+ 	<select id="findAllMon" resultMap="Monitor">
+ 		select * from monitorview
+ 	</select>
+ 	
+ 	<!-- 根据设备状态查询设备 -->
+	<select id="findMonByState" parameterType="int" resultMap="Monitor">
+	select * from monitorview where monState=#{monState}
+	</select>
+	
+	<!-- 查询指定列表下的设备 -->
+<!--  	<select id="findMonByList" resultMap="Monitor"> -->
+<!--  	select * from monitorview where monPlace=#{monPlace} and monPlaceLevel=#{monPlaceLevel} -->
+<!--  	</select> -->
+ 	
+ 		<!-- 查询指定列表下的设备 -->
+ 	<select id="findMonByMonList" resultMap="Monitor" parameterType="String">
+ 	select * from monitorview where monPlace=#{monPlace} 
+ 	</select>
+ 	
+ 	<select id="findMonByMonListAndUserId" resultMap="Monitor" >
+ 	select * from monitorview where monPlace=#{monPlace} and monId in (select monId from user_monitor where userId=#{userId})
+ 	</select>
+ 	
+ 	<!-- 查询指定状态下和用户下的设备数量 -->
+ 	<select id="findMonNumByStateAndUserId"  resultType="int">
+ 	select count(monId) from monitorview where monState=#{monState} and monId in (select monId from user_monitor where userId=#{userId})
+ 	</select>
+ 	
+ 		<!-- 查询指定状态下和用户下的设备 -->
+ 	<select id="findMonByStateAndUserId"  resultMap="Monitor">
+ 	select * from monitorview where monState=#{monState} and monId in (select monId from user_monitor where userId=#{userId})
+ 	</select>
+ 	
+ 	
+ 	<!-- 查询指定状态下的设备 -->
+ 	<select id="findMonNumByState"  resultType="int" parameterType="int">
+ 	select count(monId) from monitorview where monState=#{monState} 
+ 	</select>
+ 	
+ 	<!-- 根据制定id查询设备 -->
+ 	 	<select id="findMonById" resultMap="Monitor" parameterType="int">
+ 		select * from monitorview     where monId=#{monId}; 
+ 	</select>
+ 	
+ 	
+ 	
+ 	<!-- 根据型号判断设备是否存在 -->
+ 	<select id="monIsExist" parameterType="String" resultType="int"> 	
+ 	select count(monId) from monitor where monNumber=#{monNumber};
+ 	</select>
+ 	
+ 	<!--添加设备  -->
+ 	<insert id="addMon" parameterType="zn.entity.Monitor" useGeneratedKeys="true" keyProperty="monId">
+ 	insert into monitor(monAlias,monInstall,monIP,monModel,monName,monNumber,monPlace,monType,monRoute,monPlaceName,monState) 
+ 	values(#{monAlias},#{monInstall},#{monIP},#{monModel},#{monName},#{monNumber},#{monPlace},#{monType},#{monRoute},#{monPlaceName},#{monState});
+ 	</insert>
+ 	
+ 	
+ 	
+ 
+	<!-- 根据设备id删除设备 --> 
+	<delete id="deleteMon" parameterType="int">
+	delete  from monitor where monId=#{monId} 
+	</delete>
+	
+	<!-- 修改设备信息
+	 -->
+	<update id="changeMon" parameterType="zn.entity.Monitor" >
+	update monitor <set>
+	<if test="monAlias!=null">monAlias=#{monAlias},</if>
+	<if test="monInstall!=null">monInstall=#{monInstall},</if>
+	<if test="monIP!=null">monIP=#{monIP},</if>
+	<if test="monModel!=null">monModel=#{monModel},</if>
+	<if test="monName!=null">monName=#{monName},</if>
+	<if test="monNumber!=null">monNumber=#{monNumber},</if>
+	<if test="monPlace!=null">monPlace=#{monPlace},</if>
+	<if test="monType!=null">monType=#{monType},</if>
+	<if test="monRoute!=null">monRoute=#{monRoute},</if>
+	<if test="monPlaceName!=null">monPlaceName=#{monPlaceName},</if>
+	<if test="monState!=null"> monState=#{monState},   </if>
+	</set> where monId=#{monId};
+	</update>
+	
+	<!-- 根据设备所属列表名称删除设备 -->
+<!-- 	<update id="deleteMonPlace" > -->
+<!-- 	update monitor set monPlace=null,monPlaceLevel=0 where monPlace=#{monPlace} and monPlaceLevel=#{monPlaceLevel}; -->
+<!-- 	</update> -->
+	
+	<!-- 更改设备所属列表名称 -->
+<!-- 	<update id="changeMonPlace"> -->
+<!-- 	update monitor set monPlace=#{monNewPlace} where  monPlace=#{monOldPlace} and monPlaceLevel=#{monPlaceLevel}; -->
+<!-- 	</update> -->
+	
+	<!-- 设备选择用户 -->
+	<insert id="monAddUser" >
+	insert    into  user_monitor(userId,monId) values
+	<foreach collection="userList" separator="," index="index" item="userId">
+		(#{userId},#{monId})	
+	</foreach>                             
+	</insert>
+	
+	<select id="SeleteMonListByUserId" parameterType="int" resultType="java.util.Map">
+	   select a.monId,a.monName,count(b.id) as relation from monitor a left join (select * from user_monitor where   userId=#{userId}) b on b.monId=a.monId     group by  a.monId,a.monName  
+	</select>
+	
+		<!-- 删除设备的关联用户 -->
+	<delete id="monDelteUser" parameterType="int">
+	delete from user_monitor where monId=#{monId};
+	</delete>
+	
+		<!-- 查询指定用户下的设备信息 -->
+	<select id="seleteMonByUserId" parameterType="int" resultMap="Monitor">
+    select b.* from [user] a,monitor b,user_monitor c where a.userId=c.userId 
+    and b.monId=c.monId and a.userId=#{userId}
+	</select>
+	
+	<!-- 根据设备编号查询设备id -->
+	<select id="selectMonByNum" parameterType="String" resultMap="Monitor">
+	select * from monitor where UPPER(REPLACE(monNumber,'-',''))=#{monNumber}
+	</select>
+	
+	<select id="selectMonIdByNum" parameterType="String" resultMap="Monitor">
+	select * from monitor where monNumber=#{monNumber}
+	</select>
+	
+	<!--查询所有设备的编号 -->
+	<select id="selectAllmonNumber" resultType="String">
+	select  monNumber from monitor
+	</select>
+	
+	<!-- 添加多个设备 -->
+ 	<insert id="addMoreMon"  >
+ 		insert    into  monitor(monAlias,monInstall,monIP,monModel,monName,monNumber,monPlace,monType,monRoute,monPlaceName,monState) values
+	<foreach collection="list" separator="," index="index" item="item" >
+		(#{item.monAlias},#{item.monInstall},#{item.monIP},#{item.monModel},#{item.monName},#{item.monNumber},#{item.monPlace},#{item.monType},#{item.monRoute},#{item.monPlaceName},#{item.monState})	
+	</foreach>  
+ 	</insert>
+ 	
+ 	<!-- 根据设备编号删除设备 -->
+ 	<delete id="deleteMonByMonNumber">
+ 	<![CDATA[ 
+ 	delete from monitor where monNumber in
+ 	 ]]>
+ 	<foreach collection="list" open="(" separator="," close=")"  item="model">
+		#{model}	
+	</foreach>
+ 	</delete>
+ 	
+ 	<!-- 根据设备编号更新设备 -->
+ 		<update id="changeMonByMonNumber" parameterType="zn.entity.Monitor" >
+	update monitor <set>
+	<if test="monAlias!=null">monAlias=#{monAlias},</if>
+	<if test="monInstall!=null">monInstall=#{monInstall},</if>
+	<if test="monIP!=null">monIP=#{monIP},</if>
+	<if test="monModel!=null">monModel=#{monModel},</if>
+	<if test="monName!=null">monName=#{monName},</if>
+	<if test="monPlace!=null">monPlace=#{monPlace},</if>
+	<if test="monType!=null">monType=#{monType},</if>
+	<if test="monRoute!=null">monRoute=#{monRoute},</if>
+	<if test="monPlaceName!=null">monPlaceName=#{monPlaceName},</if>
+	<if test="monState!=null"> monState=#{monState},   </if>
+	</set> where monNumber=#{monNumber};
+	</update>
+	
+	<select id="selectMonIdByMonNumber" resultType="int">
+	select monId from monitor where monNumber in
+	  <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+        #{item}
+  </foreach>
+	</select>
+	
+	
+	<select id="selectMonByMonNumber" resultType="zn.entity.Monitor">
+	select * from monitor where monNumber in
+	  <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+        #{item}
+  </foreach>
+	</select>
+	
+	
+	
+	
+ </mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.OrganizationDao">
+ 	<resultMap type="zn.entity.Organization" id="Organization">
+		<result property="orgId" column="orgId"/>
+		<result property="orgName" column="orgName"/>
+	</resultMap> 
+		<!-- 查询组织列表 -->
+		<select id="selectOrg" resultMap="Organization">
+		select * from organization;	
+		</select>
+		
+		<!-- 增加组织 -->
+		<insert id="addOrg" parameterType="String">
+		insert   organization(orgName) values(#{orgName});	
+		</insert>
+	
+		<!-- 根据名字判断组织是否存在 -->
+		<select id="OrgIsExist" parameterType="String" resultType="int">
+		select count(orgId) from  organization where orgName=#{orgName};	
+		</select>	
+		
+		
+		<!-- 改变组织名称 -->
+		<update id="changeOrgName" >
+		update organization set orgName=#{nowOrgName} where orgName=#{oldOrgName};	
+		</update>
+		
+		
+		
+		<!-- 根据组织名称删除组织 -->
+		<delete id="deleteOrg" parameterType="String">
+		delete from organization where orgName=#{orgName};
+		</delete>
+	
+ </mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.RoomStatusDao">
+   <insert id="save" parameterType="zn.entity.RoomStatus" useGeneratedKeys="true" keyProperty="id">
+       insert into room_status(monId,monNum,TDMC,TDHM,DY,WD,DL,LD,TStatus,smogStatus,AStatus,airSwitchStatus)
+       values(#{monId},#{monNum},#{TDMC},#{TDHM},#{DY},#{WD},#{DL},#{LD},#{TStatus},#{smogStatus},#{AStatus},#{airSwitchStatus})
+   </insert>
+   <select id="getByMonId" resultType="zn.entity.RoomStatus">
+       select * from room_status where monId=#{monId}
+   </select>
+   <insert id="saveAll" parameterType="list">
+      insert into room_status(monId,monNum,TDMC,TDHM,DY,WD,DL,LD,TStatus,smogStatus,AStatus,airSwitchStatus)
+      values
+      <foreach collection="list" separator="," item="item">
+         (#{item.monId},#{item.monNum},#{item.TDMC},#{item.TDHM},#{item.DY},#{item.WD},#{item.DL},#{item.LD},
+         #{item.TStatus},#{item.smogStatus},#{item.AStatus},#{item.airSwitchStatus})
+      </foreach>
+   </insert>
+   <delete id="deleteAll" parameterType="list">
+     delete from room_status where id in
+     <foreach collection="list" separator="," item="item" open="("  close=")">
+         #{item}
+     </foreach>
+   </delete>
+   <select id="getByMonIdAndNode" resultType="zn.entity.RoomStatus">
+       select * from room_status where monId=#{monId} and TDHM=#{nodeNum}
+   </select>
+   <update id="updateAirSwitchStatus">
+       update room_status set airSwitchStatus=#{airSwitchStatus} where monId=#{monId} and TDHM=#{nodeNum}
+   </update>
+ </mapper>

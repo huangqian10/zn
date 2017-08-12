@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.MonDateDao">
+ 	
+ 	<!--查询指定设备的数据  -->
+	<select id="selectMonDateById"  parameterType="int" resultType="zn.entity.MonDate">
+	select * from mondate where monId=#{monId}	
+	</select> 
+	
+	<insert id="addMonDateId" parameterType="int">
+	insert into mondate(monId) values (#{monId}) 
+	</insert>
+	
+	<insert id="addMonDateIdList">
+	insert into mondate(monId) values 
+	<foreach collection="list"  separator=","   item="model">
+	(#{model}) 
+	</foreach>
+	</insert>
+	
+	
+	
+	<!-- 添加设备数据 -->
+	<insert id="addMonDate" parameterType="zn.entity.MonDate">
+	insert into mondate(monInT,allAV,allBV,allCV,humidity,monSwitch,allAA,allBA,
+	allCA,A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,name1,name2,name3,name4,name5,name6,
+	name7,name8,name9,name10,name11,name12,monId,T1,T2,T3,T4,T5,T6,T7,T8,T9
+	,T10,T11,T12) values 
+	(#{monInT},#{allAV},#{allBV},#{allCV},#{humidity},#{monSwitch},#{allAA},
+	#{allBA},#{allCA},#{A1},#{A2},#{A3},#{A4},#{A5},#{A6},#{A7},#{A8},#{A9},
+	#{A10},#{A11},#{A12},#{name1},#{name2},#{name3},#{name4},#{name5},#{name6},
+	#{name7},#{name8},#{name9},#{name10},#{name11},#{name12},#{monId},#{T1},#{T2}
+	,#{T3},#{T4},#{T5},#{T6},#{T7},#{T8},#{T9},#{T10},#{T11},#{T12});                       
+	</insert>
+	
+	<!-- 更新设备数据 -->
+	<update id="changeMonDate" parameterType="zn.entity.MonDate">
+	update  mondate <set>
+	<if test="monId!=null">monId=#{monId},</if>
+	<if test="monInT!=null">monInT=#{monInT},</if>
+	<if test="allAV!=null">allAV=#{allAV},</if>
+	<if test="allBV!=null">allBV=#{allBV},</if>
+	<if test="allCV!=null">allCV=#{allCV},</if>
+	<if test="humidity!=null">humidity=#{humidity},</if>
+	<if test="allAA!=null">allAA=#{allAA},</if>
+	<if test="allBA!=null">allBA=#{allBA},</if>
+	<if test="allCA!=null">allCA=#{allCA},</if>
+	<if test="monSwitch!=null">monSwitch=#{monSwitch}</if>
+	<if test="A1!=null">A1=#{A1},</if>
+	<if test="A2!=null">A2=#{A2},</if>
+	<if test="A3!=null">A3=#{A3},</if>
+	<if test="A4!=null">A4=#{A4},</if>
+	<if test="A5!=null">A5=#{A5},</if>
+	<if test="A6!=null">A6=#{A6},</if>
+	<if test="A7!=null">A7=#{A7},</if>
+	<if test="A8!=null">A8=#{A8},</if>
+	<if test="A9!=null">A9=#{A9},</if>
+	<if test="A10!=null">A10=#{A10},</if>
+	<if test="A11!=null">A11=#{A11},</if>
+	<if test="A12!=null">A12=#{A12},</if>
+	<if test="name1!=null">name1=#{name1},</if>
+	<if test="name2!=null">name2=#{name2},</if>
+	<if test="name3!=null">name3=#{name3},</if>
+	<if test="name4!=null">name4=#{name4},</if>
+	<if test="name5!=null">name5=#{name5},</if>
+	<if test="name6!=null">name6=#{name6},</if>
+	<if test="name7!=null">name7=#{name7},</if>
+	<if test="name8!=null">name8=#{name8},</if>
+	<if test="name9!=null">name9=#{name9},</if>
+	<if test="name10!=null">name10=#{name10},</if>
+	<if test="name11!=null">name11=#{name11},</if>
+	<if test="name12!=null">name12=#{name12},</if>
+	<if test="T1!=null and T1!=''">T1=#{T1},</if>
+	<if test="T2!=null and T2!=''">T2=#{T2},</if>
+	<if test="T3!=null and T3!=''">T3=#{T3},</if>
+	<if test="T4!=null and T4!=''">T4=#{T4},</if>
+	<if test="T5!=null and T5!=''">T5=#{T5},</if>
+	<if test="T6!=null and  T6!=''">T6=#{T6},</if>
+	<if test="T7!=null and  T7!=''">T7=#{T7},</if>
+	<if test="T8!=null and  T8!=''">T8=#{T8},</if>
+	<if test="T9!=null and  T9!=''">T9=#{T9},</if>
+	<if test="T10!=null and T10!=''">T10=#{T10},</if>
+	<if test="T11!=null and T11!=''">T11=#{T11},</if>
+	<if test="T12!=null and T12!=''">T12=#{T12},</if>	
+	</set> 
+	where monId=#{monId}; 
+	</update>
+	
+	<!-- 更改设备开关 -->
+	<update id="changeMonSwitch" >
+	update  mondate <set>
+	<if test="monSwitch!=null">monSwitch=#{monSwitch}</if>
+	</set>
+		where monId=#{monId}; 
+	</update>
+	
+	
+	<!-- 判断设备数据是否存在 -->
+	<select id="selectMonDateIsExist" parameterType="int" resultType="int">
+	select count(monId) from mondate where  monId=#{monId}
+	</select>
+	
+	<!-- 查询设备的开关和编号 -->
+	<select id="selectSwitchAndNumber" parameterType="int" resultType="Map">
+	 select  a.monSwitch, b.monNumber    from mondate a,monitor b  where   a.monId=b.monId and  a.monId=#{monId}
+	
+	</select>
+ </mapper>

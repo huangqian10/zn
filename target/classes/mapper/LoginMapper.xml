@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.LoginDao">
+ <!-- 查询用户登陆的记录 -->
+	<select id="countIsExist" parameterType="int" resultType="int">
+	select count from  login  where userId=#{userId}; 	
+	</select> 
+ 
+ <!--增加指定用户的登陆记录  -->
+ 	<insert id="addCount" >
+ 	insert into login(userId) values(#{userId})
+ 	</insert>
+ 
+  <!--增加指定用户的登陆记录  -->	
+	<update id="autoAddCount" parameterType="int">
+	update login set count=count+1 where userId=#{userId};
+	</update>
+
+ <!--删除过时的登陆记录 -->	
+	<delete id="deleteOutModedCount">
+	delete from login <![CDATA[ where loadTime<=#{agoTime} ]]> 
+	</delete>
+	
+<!-- 根据用户id删除登陆记录 -->	
+	<delete id="deleteCountByuserId" parameterType="int">
+	delete from login where userId=#{userId};	
+	</delete>
+	
+ 	
+ </mapper>

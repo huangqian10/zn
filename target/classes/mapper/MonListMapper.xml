@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+  
+  <mapper namespace="zn.dao.MonListDao">
+  <!-- 查询所有设备列表 -->
+  <select id="selectAllMonList" resultType="zn.entity.MonList">
+ 		 select * from monlist
+  </select>
+  
+  
+  <!-- 删除所有设备列表 -->
+  <delete id="deleteAllMonList">
+  delete from monlist
+  </delete>
+  
+  <!-- 添加所有设备列表 -->
+  <insert id="addAllMonList">
+  insert  into monlist(monListId,monListName,superiorListId,listLevel) values
+  	<foreach collection="list" separator="," index="index" item="item" >
+		(#{item.monListId},#{item.monListName},#{item.superiorListId},#{item.listLevel})	
+	</foreach>   
+  </insert>
+  
+<!--   查询指定级别下的列表 -->
+  <select id="selectMonListByListLevel" parameterType="int" resultType="zn.entity.MonList">
+  select * from monlist where superiorListId='0'
+  </select>
+  
+<!--   查询指定列表下的列表 -->
+  <select id="selectMonListByList" parameterType="String" resultType="zn.entity.MonList">
+  select * from monlist where superiorListId=#{superiorListId}
+  </select>
+  
+   </mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+ <mapper namespace="zn.dao.MonSecondListDao">
+<resultMap type="zn.entity.MonSecondList" id="MonSecondList">
+		<result property="secondListId" column="secondListId"/>
+		<result property="secondListName" column="secondListName"/>
+		<result property="firstListId" column="firstListId"/>	
+
+	</resultMap> 
+ 	<select id="selectIsExistById" parameterType="int" resultType="int">
+ 	select count(secondListId) from monsecondlist where secondListId=#{secondListId};
+ 	</select>
+ 
+	<select id="selectIsExist" parameterType="String" resultType="int">
+	select count(secondListId) from monsecondlist where secondListName=#{secondListName};
+	</select>
+	
+	<insert id="addSecondList">
+	insert  into  monsecondlist(secondListName,firstListId)  values (#{secondListName},#{firstListId});
+	 </insert>
+	 
+	 <delete id="deleteSecondList" parameterType="int">
+	 delete from monsecondlist where secondListId=#{secondListId}
+	 </delete>
+	
+	<update id="changeSecondList">
+	update monsecondlist <set>
+	<if test="secondListName!=null">secondListName=#{secondListName},</if>
+		<if test="firstListId!=null">firstListId=#{firstListId},</if>
+	</set>
+	 where secondListId=#{secondListId}
+	</update>
+	
+	<select id="findAllSecondlist"  resultMap="MonSecondList">
+	select * from monsecondlist
+	</select>
+	
+	
+	<select id="findSecondlistByFirstId"  parameterType="int"  resultMap="MonSecondList">
+	select * from monsecondlist where firstListId=#{firstListId}
+	</select>
+	
+	
+	<select id="selectListById" parameterType="int" resultMap="MonSecondList">
+		select * from monsecondlist where secondListId=#{secondListId}
+	</select>
+	
+	
+	
+ 	
+ </mapper>
