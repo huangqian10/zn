@@ -19,4 +19,6 @@ public interface LimitsDao {
 	public int userDeleteLimits(int userId);
 	public List<User> selectUserByLimitsId(int limitsId);
 	public List<Limits> selectLimitsList();
+	
+	
 }
