@@ -6,6 +6,7 @@ public class AndroidListCast extends AndroidNotification {
 			setAppMasterSecret(appMasterSecret);
 			setPredefinedKeyValue("appkey", appkey);
 			this.setPredefinedKeyValue("type", "listcast");	
+			setPredefinedKeyValue("activity","com.sfbr.dormitory.Controller.Alarm.AlarmManageActivity");
 	}
 	
 	public void setDeviceTokes(String deviceTokens) throws Exception {

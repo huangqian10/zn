@@ -9,6 +9,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -19,8 +20,8 @@ public class PushClient {
 	protected final String USER_AGENT = "Mozilla/5.0";
 
 	// This object is used for sending the post request to Umeng
-	protected HttpClient client = new DefaultHttpClient();
-	
+	//protected HttpClient client = new DefaultHttpClient();
+	protected HttpClient client =HttpClients.createDefault();
 	// The host
 	protected static final String host = "http://msg.umeng.com";
 	
@@ -37,7 +38,11 @@ public class PushClient {
         String postBody = msg.getPostBody();
         String sign = DigestUtils.md5Hex(("POST" + url + postBody + msg.getAppMasterSecret()).getBytes("utf8"));
         url = url + "?sign=" + sign;
+        
+        //HttpClient client = HttpClients.createDefault();//修改
         HttpPost post = new HttpPost(url);
+        System.out.println(url);
+        
         post.setHeader("User-Agent", USER_AGENT);
         StringEntity se = new StringEntity(postBody, "UTF-8");
         post.setEntity(se);
@@ -57,6 +62,7 @@ public class PushClient {
         } else {
             System.out.println("Failed to send the notification!");
         }
+       
         return true;
     }
 
@@ -73,6 +79,7 @@ public class PushClient {
 		String postBody = uploadJson.toString();
 		String sign = DigestUtils.md5Hex(("POST" + url + postBody + appMasterSecret).getBytes("utf8"));
 		url = url + "?sign=" + sign;
+	   // HttpClient client =HttpClients.createDefault();//修改
 		HttpPost post = new HttpPost(url);
 		post.setHeader("User-Agent", USER_AGENT);
 		StringEntity se = new StringEntity(postBody, "UTF-8");

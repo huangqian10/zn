@@ -14,16 +14,17 @@ import zn.until.NoteResult;
 @Controller
 @RequestMapping("/user")
 public class SetUserDeviceTokenController {
-    @Resource
-    private UserService userService;
-    
-    @RequestMapping("/setDeviceToken")
-    @ResponseBody
-    public NoteResult setDeviceToken(@RequestParam(required=false)Integer userId,String deviceToken,Integer mobileType,HttpSession session) {
-    	if(userId==null) {
-    		userId=(Integer) session.getAttribute("userId");
-    	}
-    	NoteResult result=userService.setUserDeviceToken(userId, deviceToken,mobileType);
-    	return result;
-    }
+	@Resource
+	private UserService userService;
+
+	@RequestMapping("/setDeviceToken")
+	@ResponseBody
+	public NoteResult setDeviceToken(@RequestParam(required = false) Integer userId, String deviceToken,
+			Integer mobileType, HttpSession session) {
+		if (userId == null) {
+			userId = (Integer) session.getAttribute("userId");
+		}
+		NoteResult result = userService.setUserDeviceToken(userId, deviceToken, mobileType);
+		return result;
+	}
 }

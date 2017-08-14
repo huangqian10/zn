@@ -216,7 +216,7 @@ public class UPushClient {
 	//测试   暂未成功
 	public static void main(String[] args) {
 		UPushClient androidClient = new UPushClient(UPushConfig.appkey_android, UPushConfig.appMasterSecret_android);
-		List<String> androidDevices=Arrays.asList("","");
+		List<String> androidDevices=Arrays.asList("Aqhhsgy8K89fe9IXHl_U0Cit457dkrFv5OvFVtPPVNBj","Au9aStHNh3fMLWCQjSeG5tCnkiGW751H_V39dRAmWBdN");
 		try {
 			if(!androidDevices.isEmpty()) {
 			     androidClient.sendAndroidListcast(androidDevices, "SFBR推送android测试信息");
