@@ -99,18 +99,15 @@ public class AnalysisServiceImpl implements AnalysisService {
 	}
 	
 	public static void main(String[] args) {
-		String ad="53464252010000004F00000030333033423231364252421D6E788B3D38470FA3A27DF6D7D6D932";
+		String ad="53464252010000004F00000030333033423231364252421d6e788b3d38470fa3a27df6d7d6d932";
 		String ass=ad.substring(24, ad.length()-32);
 //		String asscii	=EncodeUtils.asciiToString("30,31");
 //		System.out.println(asscii);
+
+		 ass=EncodeUtils.convertHexToString(ass);
 	
-		String aex=EncodeUtils.convertHexToString(ass).toLowerCase();
-		String monId="qw";
-		String monName="设备名称";
-		String info="we";
-		System.out.println(aex);
-		SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		System.out.println(simpleDateFormat.format(new Date()));
+
+		System.out.println(ass.substring(4,6));
 
 	}
 	
@@ -123,7 +120,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			return;
 		}
 		aex=aex.substring(24, aex.length()-32);
-		aex=EncodeUtils.convertHexToString(aex);
+		aex=EncodeUtils.convertHexToString(aex).toLowerCase();
 		MonAlarms monAlarms = new MonAlarms();
 		int monId=monit.getMonId();
 		List<RoomStatus>	roomList= roomStatusDao.getByMonIdAndNode(monId,aex.substring(0,2));
@@ -144,7 +141,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			info+="发生了电流上限报警";
 			break;
 		default:
-			break;
+			return;
 		}
 		monAlarms.setMonAlarmsType(monAlarmsType);
 		monAlarms.setMonAlarmsInfo(info);
