@@ -51,7 +51,7 @@ public class UPushClient {
 		}
 		deviceTokenStr=stringBuilder.toString();
 		deviceTokenStr=deviceTokenStr.substring(0,deviceTokenStr.length()-1);
-		System.out.println("device_token:"+deviceTokenStr+","+deviceTokenStr.length());//
+		//System.out.println("device_token:"+deviceTokenStr+","+deviceTokenStr.length());//
 		//设置参数
 		listcast.setDeviceTokes(deviceTokenStr);
 		listcast.setTicker("SFBR");

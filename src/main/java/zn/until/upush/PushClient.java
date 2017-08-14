@@ -38,10 +38,10 @@ public class PushClient {
         String postBody = msg.getPostBody();
         String sign = DigestUtils.md5Hex(("POST" + url + postBody + msg.getAppMasterSecret()).getBytes("utf8"));
         url = url + "?sign=" + sign;
-        
+        //System.out.println(postBody);
         //HttpClient client = HttpClients.createDefault();//修改
         HttpPost post = new HttpPost(url);
-        System.out.println(url);
+        //System.out.println(url);
         
         post.setHeader("User-Agent", USER_AGENT);
         StringEntity se = new StringEntity(postBody, "UTF-8");
