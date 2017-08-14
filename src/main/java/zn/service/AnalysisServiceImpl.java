@@ -50,7 +50,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	@Resource // 注入
 	private MonitorDao monitorDao;
-	
+
 	@Resource
 	private RoomStatusDao roomStatusDao;
 
@@ -80,14 +80,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 				String aex = EncodeUtils.hexEncode(hex);
 				System.out.println(aex);
 				String monNumber = aex.substring(aex.length() - 32, aex.length());
-				if("4f".equals(aex.substring(16, 18))||"4F".equals(aex.substring(16, 18))){
-				
-					analysisWarningAex(aex,monNumber);
-				}else{
-			
-				
+				if ("4f".equals(aex.substring(16, 18)) || "4F".equals(aex.substring(16, 18))) {
 
-				analysisHex(hex, monNumber);
+					analysisWarningAex(aex, monNumber);
+				} else {
+
+					analysisHex(hex, monNumber);
 				}
 
 			}
@@ -97,59 +95,55 @@ public class AnalysisServiceImpl implements AnalysisService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void main(String[] args) {
-		String ad="53464252010000004F00000030333033423231364252421d6e788b3d38470fa3a27df6d7d6d932";
-		String ass=ad.substring(24, ad.length()-32);
-//		String asscii	=EncodeUtils.asciiToString("30,31");
-//		System.out.println(asscii);
+		String ad = "53464252010000004F00000030333033423231364252421d6e788b3d38470fa3a27df6d7d6d932";
+		String ass = ad.substring(24, ad.length() - 32);
+		// String asscii =EncodeUtils.asciiToString("30,31");
+		// System.out.println(asscii);
 
-		 ass=EncodeUtils.convertHexToString(ass);
-	
+		ass = EncodeUtils.convertHexToString(ass);
 
-		System.out.println(ass.substring(4,6));
+		System.out.println(ass.substring(4, 6));
 
 	}
-	
-	
 
 	@Async
-	public void analysisWarningAex(String aex,String  monNumber){
+	public void analysisWarningAex(String aex, String monNumber) {
 		Monitor monit = monitorDao.selectMonByNum(monNumber.toUpperCase());
 		if (monit == null) {
 			return;
 		}
-		aex=aex.substring(24, aex.length()-32);
-		aex=EncodeUtils.convertHexToString(aex).toLowerCase();
+		aex = aex.substring(24, aex.length() - 32);
+		aex = EncodeUtils.convertHexToString(aex).toLowerCase();
 		MonAlarms monAlarms = new MonAlarms();
-		int monId=monit.getMonId();
-		List<RoomStatus>	roomList= roomStatusDao.getByMonIdAndNode(monId,aex.substring(0,2));
-		if(roomList.isEmpty()){
+		int monId = monit.getMonId();
+		List<RoomStatus> roomList = roomStatusDao.getByMonIdAndNode(monId, aex.substring(0, 2));
+		if (roomList.isEmpty()) {
 			return;
 		}
-		String info=monit.getMonName()+roomList.get(0).getTDMC();
-		String monAlarmsType=aex.substring(4,6);
+		String info = monit.getMonName() + roomList.get(0).getTDMC();
+		String monAlarmsType = aex.substring(4, 6);
 		switch (monAlarmsType) {
 		case "b1":
-			
-			info+="发生了温度报警";
+
+			info += "发生了温度报警";
 			break;
 		case "b2":
-			info+="发生了烟感报警";
+			info += "发生了烟感报警";
 			break;
 		case "b3":
-			info+="发生了电流上限报警";
+			info += "发生了电流上限报警";
 			break;
 		default:
 			return;
 		}
 		monAlarms.setMonAlarmsType(monAlarmsType);
 		monAlarms.setMonAlarmsInfo(info);
-		SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 		monAlarms.setMonAlarmsTM(simpleDateFormat.format(new Date()));
 
-	
 		if (monAlarms.getMonAlarmsInfo() == null || "".equals(monAlarms.getMonAlarmsInfo())) {
 			return;
 		}
@@ -165,14 +159,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 			mapList.add(map);
 		}
 		monAlarmsDao.userAddAlarm(mapList);
-        
+		// 推送报警信息给相关用户
+		List<Map<String, Object>> deviceInfoList = userDao.selectDeviceTokenListByMonId(monId);
+		sendAlarmInfoToUser(info, deviceInfoList);
+
 		return;
 	}
 
-	
-	
-	
-	
 	/**
 	 * 解析并储存hex文件 @Title: analysisHex @Description: TODO @param hex @return @throws
 	 */
@@ -360,7 +353,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 					mapList.add(map);
 				}
 				monAlarmsDao.userAddAlarm(mapList);
-                
+
 				return;
 			}
 
@@ -530,10 +523,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 			// if(mon.getMonAlarmsInfo()!=null){
 			// JPushClientExample.jpush(mon.getMonAlarmsInfo());
 			// }
-            //推送报警信息给相关用户
-			List<Map<String,Object>> deviceInfoList=userDao.selectDeviceTokenListByMonId(mon.getMonId());
-			sendAlarmInfoToUser(mon.getMonAlarmsInfo(),deviceInfoList);
-			
+			// 推送报警信息给相关用户
+			List<Map<String, Object>> deviceInfoList = userDao.selectDeviceTokenListByMonId(mon.getMonId());
+			sendAlarmInfoToUser(mon.getMonAlarmsInfo(), deviceInfoList);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -541,40 +534,35 @@ public class AnalysisServiceImpl implements AnalysisService {
 	}
 
 	// 推送报警信息给app客户端
-	public void sendAlarmInfoToUser(String alarmInfo,List<Map<String, Object>> deviceInfoList) {
-		
-		UPushClient androidClient = new UPushClient(UPushConfig.appkey_android, UPushConfig.appMasterSecret_android);
-		UPushClient iosClient = new UPushClient(UPushConfig.appkey_ios, UPushConfig.appMasterSecret_ios);
-		
-		List<String> androidDevices=new ArrayList<String>();
-		List<String> iosDevices=new ArrayList<String>();
-		//给手机设备分类
-		for(Map<String,Object> map:deviceInfoList) {
-			if((int)map.get("phoneType")==1)
+	public void sendAlarmInfoToUser(String alarmInfo, List<Map<String, Object>> deviceInfoList) {
+
+		List<String> androidDevices = new ArrayList<String>();
+		List<String> iosDevices = new ArrayList<String>();
+		// 给手机设备分类
+		for (Map<String, Object> map : deviceInfoList) {
+			if ((int) map.get("phoneType") == 1)
 				androidDevices.add((String) map.get("deviceToken"));
-			else if((int)map.get("phoneType")==2)
-				iosDevices.add((String)map.get("deviceToken"));
+			else if ((int) map.get("phoneType") == 2)
+				iosDevices.add((String) map.get("deviceToken"));
 		}
-		//向android推送信息
+		// 向android推送信息
 		try {
-			if(!androidDevices.isEmpty()) {
-			     androidClient.sendAndroidListcast(androidDevices, alarmInfo);
+			if (!androidDevices.isEmpty()) {
+				UPushClient androidClient = new UPushClient(UPushConfig.appkey_android,
+						UPushConfig.appMasterSecret_android);
+				androidClient.sendAndroidListcast(androidDevices, alarmInfo);
 			}
 		} catch (Exception e) {
 			System.out.println("send android alarm error");
 			e.printStackTrace();
 		}
-        //向ios推送信息
-		try {
-			if(!iosDevices.isEmpty()) {
-			     iosClient.sendIOSListcast(iosDevices, alarmInfo);
-			}
-		} catch (Exception e) {
-			System.out.println("send ios alarm error");
-			e.printStackTrace();
-		}
+		// 向ios推送信息
+		/*
+		 * try { if(!iosDevices.isEmpty()) { //UPushClient iosClient = new
+		 * UPushClient(UPushConfig.appkey_ios, UPushConfig.appMasterSecret_ios);
+		 * iosClient.sendIOSListcast(iosDevices, alarmInfo); } } catch (Exception e) {
+		 * System.out.println("send ios alarm error"); e.printStackTrace(); }
+		 */
 	}
-	
-	
-	
+
 }
