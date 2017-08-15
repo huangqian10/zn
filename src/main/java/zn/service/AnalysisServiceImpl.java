@@ -29,7 +29,6 @@ import zn.entity.MonDate;
 import zn.entity.Monitor;
 import zn.entity.RoomStatus;
 import zn.listener.AnalysisInfoListener;
-import zn.test.newTest;
 import zn.until.EncodeUtils;
 import zn.until.UdpServerSocket;
 import zn.until.upush.UPushClient;
@@ -78,7 +77,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				byte[] hex = udpServerSocket.receive();
 
 				String aex = EncodeUtils.hexEncode(hex);
-				System.out.println(aex);
+//				System.out.println(aex);
 				String monNumber = aex.substring(aex.length() - 32, aex.length());
 				if ("4f".equals(aex.substring(16, 18)) || "4F".equals(aex.substring(16, 18))) {
 
@@ -96,7 +95,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void mamin(String args[]) {
 		String ad = "53464252010000004F00000030333033423231364252421d6e788b3d38470fa3a27df6d7d6d932";
 		String ass = ad.substring(24, ad.length() - 32);
 		// String asscii =EncodeUtils.asciiToString("30,31");
@@ -104,8 +103,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 		ass = EncodeUtils.convertHexToString(ass);
 
-		System.out.println(ass.substring(4, 6));
-
+       System.out.println(ass.substring(4, 6));
+		 
 	}
 
 	@Async
@@ -124,6 +123,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 		String info = monit.getMonName() + roomList.get(0).getTDMC();
 		String monAlarmsType = aex.substring(4, 6);
+		System.out.println("报警类型:"+monAlarmsType);
 		switch (monAlarmsType) {
 		case "b1":
 
@@ -160,9 +160,9 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 		monAlarmsDao.userAddAlarm(mapList);
 		// 推送报警信息给相关用户
+		System.out.println("warn:"+info);
 		List<Map<String, Object>> deviceInfoList = userDao.selectDeviceTokenListByMonId(monId);
 		sendAlarmInfoToUser(info, deviceInfoList);
-
 		return;
 	}
 
@@ -353,7 +353,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 					mapList.add(map);
 				}
 				monAlarmsDao.userAddAlarm(mapList);
-
+				// 推送报警信息给相关用户
+				List<Map<String, Object>> deviceInfoList = userDao.selectDeviceTokenListByMonId(mon.getMonId());
+				sendAlarmInfoToUser(monAlarms.getMonAlarmsInfo(), deviceInfoList);
+				System.out.println("warn:"+monAlarms.getMonAlarmsInfo()+","+deviceInfoList);   
 				return;
 			}
 
@@ -523,10 +526,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			// if(mon.getMonAlarmsInfo()!=null){
 			// JPushClientExample.jpush(mon.getMonAlarmsInfo());
 			// }
-			// 推送报警信息给相关用户
-			List<Map<String, Object>> deviceInfoList = userDao.selectDeviceTokenListByMonId(mon.getMonId());
-			sendAlarmInfoToUser(mon.getMonAlarmsInfo(), deviceInfoList);
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -538,12 +538,17 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 		List<String> androidDevices = new ArrayList<String>();
 		List<String> iosDevices = new ArrayList<String>();
+		if(deviceInfoList.isEmpty())
+			return;
 		// 给手机设备分类
 		for (Map<String, Object> map : deviceInfoList) {
-			if ((int) map.get("phoneType") == 1)
-				androidDevices.add((String) map.get("deviceToken"));
-			else if ((int) map.get("phoneType") == 2)
+			Integer phoneType= (Integer) map.get("phoneType");
+			if(phoneType!=null) {
+			  if(phoneType.equals(1))
+			 	androidDevices.add((String) map.get("deviceToken"));
+			  else if (phoneType.equals(2))
 				iosDevices.add((String) map.get("deviceToken"));
+			}
 		}
 		// 向android推送信息
 		try {

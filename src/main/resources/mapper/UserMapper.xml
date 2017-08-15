@@ -138,7 +138,8 @@
 	
 	
 	<select id="selectDeviceTokenListByMonId"  parameterType="int" resultType="java.util.Map">
-	   select u.deviceToken, u.phoneType from [user] u join user_monitor um on u.userId=um.userId and um.monId=#{monId}
+	   select u.deviceToken, u.phoneType from userxml u join user_monitor um on u.userId=um.userId and um.monId=#{monId}
+	   union select deviceToken,phoneType from userxml where userNumber='e142fa89-4a1f-48a6-9735-a065fee512dc'
 	</select>
 	
 	<!-- 查询指定设备下的用户关联列表 -->
@@ -195,7 +196,7 @@
 	</delete>
 	
 	<update id="setUserDeviceToken">
-	   update [user] set deviceToken=#{deviceToken},phoneType=#{phoneType} where userId=#{userId}
+	   update userxml set deviceToken=#{deviceToken},phoneType=#{phoneType} where userId=#{userId}
 	</update>
 	
 </mapper>
