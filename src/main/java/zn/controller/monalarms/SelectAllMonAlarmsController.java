@@ -31,4 +31,14 @@ public class SelectAllMonAlarmsController {
 		return note;
 		
 	}
+	
+	
+	@RequestMapping("selectAllMonAlarmsPaging")
+	@ResponseBody
+	public NoteResult executes(HttpSession session,Integer pageIndex, Integer pageSize){
+		int userId=Integer.parseInt((String) session.getAttribute("userId"));
+		NoteResult note=monAlarmsService.selectAllMonAlarmsPaging(userId,pageIndex,pageSize);	
+		return note;
+		
+	}
 }

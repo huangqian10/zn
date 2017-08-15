@@ -19,6 +19,7 @@ public interface MonAlarmsService {
 	public NoteResult deleteMonAlarmsById(Integer alarmsId);
 	public NoteResult selectMonAlarmsById(Integer monId);
 	public NoteResult changeMonAlarmsStatus(Integer alarmsId,Integer userId);
+	NoteResult selectAllMonAlarmsPaging(Integer userId, Integer pageIndex, Integer pageSize);
 	
 
 }

@@ -17,7 +17,12 @@ import zn.entity.MonAlarms;
  */
 public interface MonAlarmsDao {
 	public  List<Alarms> selectAllMonAlarms(int userId);
+	public   List<Alarms> selectAllMonAlarmsPaging(@Param("userId")Integer userId,@Param("startNumber")Integer startNumber,@Param("pageSize")Integer pageSize);
+	public int selectAllMonAlarmsCounts(Integer userId);
+	
 	public List<Alarms> selectUserAllMonAlarms(int userId);
+	public List<Alarms> selectUserAllMonAlarmsPaing(@Param("userId")Integer userId,@Param("startNumber")Integer startNumber,@Param("pageSize")Integer pageSize );
+	public int selectUserAllMonAlarmsCounts(Integer userId);
 	public   int selectAlarmsDateIsExist(int monId);
 	public    int  addMonAlarms(MonAlarms monAlarms);
 	public int changeMonAlarms(MonAlarms monAlarms);

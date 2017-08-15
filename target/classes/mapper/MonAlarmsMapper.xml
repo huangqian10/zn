@@ -8,8 +8,25 @@
 	</select> 
 	
 	
+	<select id="selectAllMonAlarmsPaging"  resultType="zn.entity.Alarms">
+	select * from alarms where userId=#{userId} limit #{startNumber},#{pageSize}
+	</select> 
+	
+		<select id="selectAllMonAlarmsCounts" parameterType="int"   resultType="int">
+	select count(alarmsId) from alarms where userId=#{userId} and monAlarmsStatus=0
+	</select> 
+	
 	<select id="selectUserAllMonAlarms" parameterType="int" resultType="zn.entity.Alarms">
 	select a.* from alarms a join  user_monitor b on a.monId=b.monId  and a.userId=b.userId where a.userId=#{userId}
+	</select>
+	
+		
+	<select id="selectUserAllMonAlarmsPaing"  resultType="zn.entity.Alarms">
+	select a.* from alarms a join  user_monitor b on a.monId=b.monId  and a.userId=b.userId where a.userId=#{userId}   limit #{startNumber},#{pageSize} 
+	</select>
+	
+		<select id="selectUserAllMonAlarmsCounts"  parameterType="int"  resultType="int">
+	select count(a.alarmsId) from alarms a join  user_monitor b on a.monId=b.monId  and a.userId=b.userId where a.userId=#{userId} and a.monAlarmsStatus=0
 	</select>
 	
 

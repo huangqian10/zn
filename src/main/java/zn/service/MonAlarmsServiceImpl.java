@@ -56,6 +56,27 @@ public class MonAlarmsServiceImpl implements MonAlarmsService {
 	}
 
 	
+	
+	@Override
+	public NoteResult selectAllMonAlarmsPaging(Integer userId, Integer pageIndex, Integer pageSize) {
+		NoteResult note=new NoteResult();
+		String  userNumber=userDao.seleteUserLimitsById(userId);
+		int startNumber = (pageIndex - 1) * pageSize;
+		if(userNumber.equals("e142fa89-4a1f-48a6-9735-a065fee512dc")){
+			List<Alarms>    list= monAlarmsDao.selectAllMonAlarmsPaging(userId,startNumber,pageSize);	
+			note.setStatus(0);
+			note.setMsg("查询成功");
+			note.setData(list);
+		}else{
+			List<Alarms>    list=monAlarmsDao.selectUserAllMonAlarmsPaing(userId,startNumber,pageSize);
+			note.setStatus(0);
+			note.setMsg("查询成功");
+			note.setData(list);
+		}
+		
+		return note;
+	}
+	
 	public NoteResult deleteMonAlarmsByMonId(Integer monId) {
 		NoteResult note=new NoteResult();
 		if(monId==null){
