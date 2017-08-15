@@ -9,7 +9,9 @@
 	
 	
 	<select id="selectAllMonAlarmsPaging"  resultType="zn.entity.Alarms">
-	select * from alarms where userId=#{userId} limit #{startNumber},#{pageSize}
+
+	select top ${pageSize} * from alarms where userId=#{userId} and alarmsId not in
+	(select top ${startNumber} alarmsId from alarms order by alarmsId) order by alarmsId desc
 	</select> 
 	
 		<select id="selectAllMonAlarmsCounts" parameterType="int"   resultType="int">
@@ -18,11 +20,15 @@
 	
 	<select id="selectUserAllMonAlarms" parameterType="int" resultType="zn.entity.Alarms">
 	select a.* from alarms a join  user_monitor b on a.monId=b.monId  and a.userId=b.userId where a.userId=#{userId}
+	
 	</select>
 	
 		
 	<select id="selectUserAllMonAlarmsPaing"  resultType="zn.entity.Alarms">
-	select a.* from alarms a join  user_monitor b on a.monId=b.monId  and a.userId=b.userId where a.userId=#{userId}   limit #{startNumber},#{pageSize} 
+	select top ${pageSize}  a.* from alarms a join user_monitor b on a.monId=b.monId  and a.userId=b.userId where a.userId=#{userId}
+	and a.alarmsId not in
+	(select top ${startNumber} alarmsId from alarms order by alarmsId) order by alarmsId desc; 
+	
 	</select>
 	
 		<select id="selectUserAllMonAlarmsCounts"  parameterType="int"  resultType="int">
