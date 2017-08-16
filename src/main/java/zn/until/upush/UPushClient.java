@@ -58,7 +58,7 @@ public class UPushClient {
 		listcast.setTitle("新的报警信息");
 		listcast.setText(alertInfo);
      
-		listcast.goAppAfterOpen();
+		listcast.goCustomAfterOpen("{'handle':'warn'}");
 		listcast.setDisplayType(AndroidNotification.DisplayType.NOTIFICATION);
 		// TODO Set 'production_mode' to 'false' if it's a test device.
 		// For how to register a test device, please see the developer doc.
